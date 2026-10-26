@@ -1,58 +1,131 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/assets/mdkp-logo.png" width="120" alt="Majlis Daerah Kuala Pilah crest">
 </p>
 
-## About Laravel
+# Majlis Daerah Kuala Pilah (MDKP)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A municipal dashboard prototype for AI-assisted vehicle number plate recognition and evidence review. Built with Laravel 13 and PHP 8.5, with a light-mode layout adapted from [Neoeagle](https://neoeagle.iotnect.com/).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**This is a working dashboard mockup.** Authentication, database records, review decisions, filtering, and CSV exports work. Live cameras and an OCR engine are not connected; vehicle previews use an illustrative photograph.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+| Area | Functionality |
+| --- | --- |
+| Login | Session authentication, remember me, password visibility, failed-attempt limits, and logout. |
+| Overview | Capture totals, camera counts, pending reviews, average confidence, activity chart, and alerts. |
+| Plate detection | Search plates; filter by camera, review status, or capture date; paginate results. |
+| Evidence review | Inspect capture metadata, add review notes, and verify or dismiss detections. Decisions persist in SQLite. |
+| Camera monitoring | Browse illustrative camera previews and filter associated captures by plate, location, or camera. |
+| Vehicle watchlist | Inspect detection matches for seeded flagged vehicles. |
+| Review activity | View current saved review decisions and notes, ordered by latest update. |
+| Reports | Export detection, watchlist, and verified-evidence CSV reports within a selected date range. |
+| Settings | Light/dark appearance and a default-camera preference, saved in the browser. |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The interface includes responsive navigation and layouts for desktop and mobile screens.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Requirements
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- PHP **8.5+**, below PHP 9, with the extensions required by Composer.
+- PDO SQLite and SQLite support for the default local database.
+- Composer 2 and Git.
+- Internet access for Google Fonts and Material Symbols.
 
-## Agentic Development
+The dashboard and login load committed CSS and JavaScript directly from `public/assets`. **An npm installation or Vite build is not required to run these pages.** Node.js and npm are optional for the Laravel Vite scaffolding in `resources/css` and `resources/js`.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Local setup
 
-```bash
-composer require laravel/boost --dev
+Run these commands in PowerShell. The same PHP and Composer steps work with Laragon's terminal.
 
-php artisan boost:install
+```powershell
+git clone https://github.com/Iotnect/mdkp.git mdkp
+cd mdkp
+
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+php -r "file_exists('database/database.sqlite') || touch('database/database.sqlite');"
+php artisan migrate
+
+php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed --class=DetectionSeeder
+
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+On macOS or Linux, replace `Copy-Item .env.example .env` with `cp .env.example .env`.
 
-## Contributing
+The default database connection in `.env.example` is SQLite. Set these application values in your local `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```dotenv
+APP_NAME="Majlis Daerah Kuala Pilah"
+APP_URL=http://127.0.0.1:8000
+DB_CONNECTION=sqlite
+```
 
-## Code of Conduct
+Open **http://127.0.0.1:8000/login**. Guests visiting the dashboard are redirected to sign in. If using Laragon's Apache virtual host instead, point its document root to this project's `public` directory and set `APP_URL` to that host.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Demo credentials
 
-## Security Vulnerabilities
+| Field | Value |
+| --- | --- |
+| Username | `admin` |
+| Password | `admin123` |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+`AdminUserSeeder` creates the account with a hashed password and leaves an existing account unchanged. These credentials are for local demonstrations; replace them before using the application with real data.
 
-## License
+### Sample data
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+`DetectionSeeder` creates **12 captures across 4 camera locations**, including **2 watchlist matches**. The sample captures are dated **23 October 2026**, and the overview chart covers **19–25 October 2026**. Capture times are stored in UTC and displayed in Malaysia time (MYT, UTC+8).
+
+To restore the original demo detections:
+
+```powershell
+php artisan db:seed --class=DetectionSeeder
+```
+
+Reseeding updates the sample rows and resets their review statuses and notes. The setup deliberately calls both seeders explicitly; the default `DatabaseSeeder` does not seed detections.
+
+## Validation
+
+```powershell
+composer validate --strict
+composer check-platform-reqs
+php artisan test --compact
+```
+
+The current suite contains **14 tests**, covering authentication, login throttling, guest access protection, detection display, evidence updates, validation, and logout. Tests use an isolated in-memory SQLite database.
+
+To format PHP changes:
+
+```powershell
+php vendor/bin/pint --dirty --format agent
+```
+
+## Project structure
+
+| Path | Purpose |
+| --- | --- |
+| `app/Http/Controllers/AuthenticatedSessionController.php` | Login, logout, and failed-attempt limits. |
+| `app/Http/Controllers/DashboardController.php` | Dashboard data and evidence review updates. |
+| `app/Http/Requests/` | Login and review input validation. |
+| `app/Models/Detection.php` | Plate detection records and attribute casts. |
+| `database/migrations/` | Database schema. |
+| `database/seeders/` | Demo administrator and detection data. |
+| `resources/views/` | Login and dashboard Blade templates. |
+| `public/assets/neoeagle.css` | Reference UI stylesheet. |
+| `public/assets/mdkp.css` | Council-specific interface additions. |
+| `public/assets/dashboard.js` | Dashboard views, filtering, dialogs, preferences, and CSV exports. |
+| `routes/web.php` | Guest and authenticated routes. |
+| `tests/Feature/` | Authentication and dashboard feature tests. |
+
+## Prototype scope
+
+- OCR results, camera locations, confidence scores, and watchlist flags are seeded examples. There is no live detection pipeline or camera stream.
+- Evidence previews reuse one illustrative vehicle image; they are not original camera captures of the displayed plates.
+- Review activity shows the latest saved decision for each record, rather than an immutable audit history.
+- Watchlist matches are available for review; watchlist creation and editing are not implemented.
+- Report generation runs in the browser using the dashboard's loaded records.
+- Role-based user management and production deployment configuration are not implemented.
+
+The local `.env`, SQLite database, dependencies, logs, and generated preview screenshots are excluded from Git. Run the setup steps after cloning to recreate the local environment.

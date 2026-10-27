@@ -30,7 +30,7 @@ export function LoginView({ data, onChange, onSubmit, processing, error, status 
         return () => document.body.classList.remove('login-body');
     }, []);
     return <main className="login-shell"><section className="login-card">
-        <div className="login-logo-panel"><img src="/assets/mdkp-logo.png" alt="Majlis Daerah Kuala Pilah crest" /></div>
+        <div className="login-logo-panel"><img src="/assets/mdkp-logo-transparent.png" alt="Majlis Daerah Kuala Pilah crest" /></div>
         <div className="login-form-panel"><div className="login-form-heading login-form-heading--simple"><h1>Welcome back</h1><p>Sign in to continue to your dashboard.</p></div>
             <form onSubmit={onSubmit} className="login-form">
                 {status && <p className="login-message" role="status">{status}</p>}

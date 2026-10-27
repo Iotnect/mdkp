@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-const assets = ['mdkp-logo.png', 'user-avatar.svg', 'vehicle-demo.jpg'];
+const assets = ['mdkp-logo.png', 'mdkp-logo-transparent.png', 'user-avatar.svg', 'vehicle-demo.jpg'];
 
 export default defineConfig({
     publicDir: false,

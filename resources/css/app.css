@@ -93,7 +93,7 @@
 .react-dialog .detail-grid { margin-top:0; }
 .react-dialog .evidence { min-height:355px; }
 .react-evidence-card img { width:100%;height:180px;object-fit:cover; }
-.login-logo-panel img { mix-blend-mode:multiply; }
+.login-logo-panel img { mix-blend-mode:normal;background:transparent; }
 .login-logo-panel::before { box-sizing:content-box; }
 .shell-mobile-trigger { display:none; }
 @media(width<=820px) { .shell-mobile-trigger { display:grid; } }

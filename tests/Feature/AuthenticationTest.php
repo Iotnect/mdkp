@@ -7,6 +7,7 @@ use App\Models\User;
 use Database\Seeders\AdminUserSeeder;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -18,7 +19,10 @@ class AuthenticationTest extends TestCase
      */
     public function test_login_page_is_available_without_product_branding(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee('Welcome back')->assertSee('Majlis Daerah')
+        $this->get(route('login'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Login')
+                ->where('urls.login', route('login.store'))
+                ->missing('password'))
             ->assertDontSee('MDKP Vision')->assertDontSee('admin123');
     }
 
@@ -55,6 +59,21 @@ class AuthenticationTest extends TestCase
     {
         $this->post(route('login.store'), [])->assertSessionHasErrors(['username', 'password']);
         $this->assertGuest();
+    }
+
+    public function test_react_login_receives_validation_feedback_after_a_failed_attempt(): void
+    {
+        User::factory()->create(['name' => 'admin', 'password' => 'admin123']);
+
+        $this->from(route('login'))->post(route('login.store'), [
+            'username' => 'admin',
+            'password' => 'incorrect',
+        ])->assertRedirect(route('login'));
+
+        $this->get(route('login'))->assertInertia(fn (Assert $page) => $page
+            ->component('Login')
+            ->where('errors.username', 'The username or password is incorrect.')
+            ->missing('password'));
     }
 
     public function test_login_throttles_after_five_failed_attempts_and_recovers_after_a_minute(): void

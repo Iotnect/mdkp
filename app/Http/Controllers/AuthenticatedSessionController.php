@@ -8,13 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): Response
     {
-        return view('login');
+        return Inertia::render('Login', [
+            'status' => $request->session()->get('status'),
+            'urls' => ['login' => route('login.store')],
+        ]);
     }
 
     public function store(LoginRequest $request): RedirectResponse

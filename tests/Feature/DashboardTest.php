@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Detection;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -18,7 +19,11 @@ class DashboardTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
         Detection::factory()->create(['plate' => 'NDF 8214']);
-        $this->get('/')->assertOk()->assertSee('MDKP')->assertSee('NDF 8214');
+        $this->get('/')->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard')
+            ->has('detections', 1)
+            ->where('detections.0.plate', 'NDF 8214')
+            ->where('urls.logout', route('logout')));
     }
 
     public function test_review_persists_status_and_notes_without_changing_capture(): void
@@ -28,6 +33,21 @@ class DashboardTest extends TestCase
         $this->patchJson(route('detections.update', $detection), ['status' => 'Verified', 'notes' => 'Plate checked.', 'plate' => 'CHANGED'])
             ->assertOk()->assertJsonPath('status', 'Verified')->assertJsonPath('plate', 'NDF 8214');
         $this->assertDatabaseHas('detections', ['id' => $detection->id, 'status' => 'Verified', 'notes' => 'Plate checked.', 'plate' => 'NDF 8214']);
+    }
+
+    public function test_dashboard_provides_typed_page_data_for_inertia_navigation(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $detection = Detection::factory()->create(['plate' => 'NDF 8214']);
+
+        $version = $this->get('/')->assertOk()->viewData('page')['version'];
+
+        $this->get('/', ['X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version, 'X-Requested-With' => 'XMLHttpRequest'])
+            ->assertOk()
+            ->assertHeader('X-Inertia', 'true')
+            ->assertJsonPath('component', 'Dashboard')
+            ->assertJsonPath('props.detections.0.plate', 'NDF 8214')
+            ->assertJsonPath('props.urls.updates.'.$detection->id, route('detections.update', $detection));
     }
 
     public function test_invalid_review_returns_422_and_preserves_pending_status(): void

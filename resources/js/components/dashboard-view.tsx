@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Bell, Camera, ChartNoAxesCombined, FolderCheck, History, LayoutDashboard, LogOut, Menu, ScanLine, Settings2, ShieldAlert } from 'lucide-react';
+import { Bell, Camera, ChartNoAxesCombined, FolderCheck, History, LayoutDashboard, LogOut, Menu, ScanLine, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -15,10 +15,10 @@ import { Reports, ReviewActivity, Settings } from '@/components/management-pages
 import { exportRecords } from '@/lib/detections';
 import type { Detection, SaveReview, WorkspacePage } from '@/types';
 
-const titles: Record<WorkspacePage, string> = { overview:'Command overview',detections:'Plate detection',evidence:'Evidence review',cameras:'Camera monitoring',watchlist:'Vehicle watchlist',activity:'Review activity',reports:'Reports',settings:'Settings' };
+const titles: Record<WorkspacePage, string> = { overview:'Command overview',detections:'Plate detection',evidence:'Evidence review',cameras:'Camera monitoring',activity:'Review activity',reports:'Reports',settings:'Settings' };
 const navigation = [
     { section:'Workspace',items:[{ page:'overview' as const,label:'Overview',icon:LayoutDashboard }] },
-    { section:'Monitoring',items:[{ page:'detections' as const,label:'Plate Detection',icon:ScanLine },{ page:'evidence' as const,label:'Evidence Review',icon:FolderCheck },{ page:'cameras' as const,label:'Camera Monitoring',icon:Camera },{ page:'watchlist' as const,label:'Vehicle Watchlist',icon:ShieldAlert }] },
+    { section:'Monitoring',items:[{ page:'detections' as const,label:'Plate Detection',icon:ScanLine },{ page:'evidence' as const,label:'Evidence Review',icon:FolderCheck },{ page:'cameras' as const,label:'Camera Monitoring',icon:Camera }] },
     { section:'Management',items:[{ page:'activity' as const,label:'Review Activity',icon:History },{ page:'reports' as const,label:'Reports',icon:ChartNoAxesCombined },{ page:'settings' as const,label:'Settings',icon:Settings2 }] },
 ];
 function readPage(): WorkspacePage { const hash = window.location.hash.slice(1); return Object.hasOwn(titles,hash) ? hash as WorkspacePage : 'overview'; }
@@ -38,7 +38,6 @@ export function DashboardView({ detections, onLogout, onSaveReview, onResetDemo 
     let content: ReactNode;
     switch (page) {
         case 'detections': content = <DetectionTable key="detections" records={records} defaultCamera={preferences.camera} onEvidence={openEvidence} />; break;
-        case 'watchlist': content = <DetectionTable key="watchlist" records={records} watchlist defaultCamera="" onEvidence={openEvidence} />; break;
         case 'evidence': content = <EvidenceLibrary records={records} onEvidence={openEvidence} onExport={exportAll} />; break;
         case 'cameras': content = <CameraMonitoring records={records} onEvidence={openEvidence} onDetections={() => navigate('detections')} onExport={exportAll} />; break;
         case 'activity': content = <ReviewActivity records={records} onEvidence={openEvidence} onExport={exportAll} />; break;

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Ban, BadgeCheck, Camera, Database, Download, History, Moon, Save, ScanLine, ShieldAlert } from 'lucide-react';
+import { Ban, BadgeCheck, Camera, Database, Download, History, Moon, Save, ScanLine } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,12 +9,12 @@ import { captureDate, exportRecords } from '@/lib/detections';
 import type { Detection } from '@/types';
 
 export function Reports({ records }: { records: Detection[] }) {
-    const reports = [{ type:'all',icon:ScanLine,title:'Plate detection',description:'Export recognised plates and detection evidence.' },{ type:'watchlist',icon:ShieldAlert,title:'Watchlist matches',description:'Export flagged vehicle detections and associated records.' },{ type:'verified',icon:BadgeCheck,title:'Verified evidence',description:'Export verified captures and saved review decisions.' }];
+    const reports = [{ type:'all',icon:ScanLine,title:'Plate detection',description:'Export recognised plates and detection evidence.' },{ type:'verified',icon:BadgeCheck,title:'Verified evidence',description:'Export verified captures and saved review decisions.' }];
     function submit(event: FormEvent<HTMLFormElement>, type: string) {
         event.preventDefault();
         const form = new FormData(event.currentTarget), from = String(form.get('from')), to = String(form.get('to'));
         if (from > to) { toast.error('The From date must be on or before the To date.'); return; }
-        const selected = records.filter(record => captureDate(record) >= from && captureDate(record) <= to && (type !== 'watchlist' || record.watchlisted) && (type !== 'verified' || record.status === 'Verified'));
+        const selected = records.filter(record => captureDate(record) >= from && captureDate(record) <= to && (type !== 'verified' || record.status === 'Verified'));
         exportRecords(selected,type) ? toast.success(`Exported ${selected.length} sample records.`) : toast.info('No records to export.');
     }
     return <><PageHeading label="Management" title="Reports" description="Choose a report and export only the records within your selected date range." /><div className="report-grid">{reports.map(report => <Panel className="report-card" key={report.type}><div className="report-card__heading"><span className="report-icon"><report.icon className="size-6" /></span><div><h2>{report.title}</h2><p>{report.description}</p></div></div><form className="report-export-form" onSubmit={event => submit(event, report.type)}><div className="report-date-range"><Label className="grid gap-1"><span>From</span><Input className="field h-11" name="from" type="date" defaultValue="2026-10-19" required /></Label><Label className="grid gap-1"><span>To</span><Input className="field h-11" name="to" type="date" defaultValue="2026-10-25" required /></Label></div><ActionButton primary type="submit"><Download /> Export</ActionButton></form></Panel>)}</div></>;

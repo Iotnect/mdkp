@@ -14,7 +14,7 @@ export interface Detection {
     updated_at: string;
 }
 
-export type WorkspacePage = 'overview' | 'detections' | 'evidence' | 'cameras' | 'watchlist' | 'activity' | 'reports' | 'settings';
+export type WorkspacePage = 'overview' | 'detections' | 'evidence' | 'cameras' | 'activity' | 'reports' | 'settings';
 
 export interface DashboardProps {
     detections: Detection[];

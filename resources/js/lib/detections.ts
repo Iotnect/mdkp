@@ -1,5 +1,9 @@
 import type { Detection } from '@/types';
 
+export function evidenceImage(record: Detection): string {
+    return `/cctv_demo/evidence-${(record.id - 1) % 2 + 1}.png`;
+}
+
 export function captureDate(record: Detection) {
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(record.captured_at));
 }

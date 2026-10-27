@@ -11,6 +11,8 @@ const assets = [
     'assets/vehicle-demo.jpg',
     'cctv_demo/cctv_demo_1_edited-processed.mp4',
     'cctv_demo/cctv_demo_2_edited-processed.mp4',
+    'cctv_demo/evidence-1.png',
+    'cctv_demo/evidence-2.png',
 ];
 
 export default defineConfig({

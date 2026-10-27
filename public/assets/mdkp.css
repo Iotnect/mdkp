@@ -61,7 +61,8 @@ dialog.incident-modal::backdrop{background:#17142773;backdrop-filter:blur(6px)}
 .search-row.plate-search{grid-template-columns:minmax(220px,1fr) repeat(3,minmax(110px,.28fr)) auto}
 @media(width<=1180px){.search-row.plate-search{grid-template-columns:1fr 1fr 1fr}.search-row.plate-search .search-field{grid-column:1/-1}}
 @media(width<=580px){.search-row.plate-search{grid-template-columns:1fr}.search-row.plate-search .search-field{grid-column:auto}}
-.brand-mark--logo img,.login-logo-panel img{mix-blend-mode:multiply}
+html[data-theme=light] .brand-mark--logo img,html[data-theme=light] .login-logo-panel img{mix-blend-mode:multiply}
+html[data-theme=dark] .brand-mark--logo img{mix-blend-mode:normal;background:#fff;border-radius:50%}
 .camera-feed>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
 .camera-feed .sample-camera-tag{position:absolute;left:12px;top:12px;color:white;background:#171427b3;border-radius:6px;padding:4px 6px;font:500 9px 'IBM Plex Mono',monospace}
 .route-event{border:0;background:transparent;text-align:left;width:100%;cursor:pointer}

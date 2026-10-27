@@ -4,7 +4,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-const assets = ['mdkp-logo.png', 'mdkp-logo-transparent.png', 'user-avatar.svg', 'vehicle-demo.jpg'];
+const assets = [
+    'assets/mdkp-logo.png',
+    'assets/mdkp-logo-transparent.png',
+    'assets/user-avatar.svg',
+    'assets/vehicle-demo.jpg',
+    'cctv_demo/cctv_demo_1_edited-processed.mp4',
+    'cctv_demo/cctv_demo_2_edited-processed.mp4',
+];
 
 export default defineConfig({
     publicDir: false,
@@ -12,15 +19,15 @@ export default defineConfig({
         name: 'demo-public-assets',
         generateBundle() {
             for (const name of assets) {
-                this.emitFile({ type: 'asset', fileName: `assets/${name}`, source: readFileSync(new URL(`./public/assets/${name}`, import.meta.url)) });
+                this.emitFile({ type: 'asset', fileName: name, source: readFileSync(new URL(`./public/${name}`, import.meta.url)) });
             }
         },
         configureServer(server) {
             server.middlewares.use((request, response, next) => {
-                const name = assets.find(asset => request.url?.split('?')[0] === `/assets/${asset}`);
+                const name = assets.find(asset => request.url?.split('?')[0] === `/${asset}`);
                 if (!name) { next(); return; }
-                response.setHeader('Content-Type', name.endsWith('.svg') ? 'image/svg+xml' : name.endsWith('.png') ? 'image/png' : 'image/jpeg');
-                response.end(readFileSync(new URL(`./public/assets/${name}`, import.meta.url)));
+                response.setHeader('Content-Type', name.endsWith('.mp4') ? 'video/mp4' : name.endsWith('.svg') ? 'image/svg+xml' : name.endsWith('.png') ? 'image/png' : 'image/jpeg');
+                response.end(readFileSync(new URL(`./public/${name}`, import.meta.url)));
             });
         },
     }],

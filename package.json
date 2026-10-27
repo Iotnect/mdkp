@@ -4,6 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:demo": "vite build --config vite.demo.config.ts",
+        "dev:demo": "vite --config vite.demo.config.ts",
+        "preview:demo": "vite preview --config vite.demo.config.ts --host 127.0.0.1 --port 4173",
         "dev": "vite",
         "typecheck": "tsc --noEmit",
         "test": "node --test tests/frontend/*.test.ts"

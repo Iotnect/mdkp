@@ -20,3 +20,10 @@ export interface DashboardProps {
     detections: Detection[];
     urls: { logout: string; updates: Record<string, string> };
 }
+
+export interface ReviewInput {
+    status: ReviewStatus;
+    notes: string;
+}
+
+export type SaveReview = (record: Detection, input: ReviewInput) => Promise<Detection>;

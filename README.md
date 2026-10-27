@@ -1,5 +1,29 @@
 # Getting started
 
+## Design demo (no PHP or database required)
+
+Install Node.js 24, then run:
+
+```sh
+npm ci
+npm run dev:demo
+```
+
+Open the address printed in the terminal and use your assigned demo credentials. Login is simulated. All captures are sample data, and review changes are saved only in the current browser. Use **Settings → Reset demo data** to restore the samples.
+
+To build and preview the static demo:
+
+```sh
+npm run build:demo
+npm run preview:demo
+```
+
+For Vercel, import this Git repository as a new project. Keep the root directory at the repository root, use the **Vite** preset, and deploy. The included `vercel.json` sets the install command to `npm ci`, the build command to `npm run build:demo`, and the output directory to `dist`. No environment variables or database are required for this demo. Choose Node.js 24 in project settings.
+
+The demo login does not protect confidential data. Use sample data only.
+
+## Full application
+
 ## Requirements
 
 - PHP 8.5 and Composer 2.

@@ -6,22 +6,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ActionButton } from '@/components/workspace-ui';
 import { captureTime, dateLabel } from '@/lib/detections';
-import type { Detection, ReviewStatus } from '@/types';
+import type { Detection, ReviewStatus, SaveReview } from '@/types';
 
-export function EvidenceDialog({ record, url, onClose, onSaved }: { record: Detection | null; url?: string; onClose: () => void; onSaved: (record: Detection) => void }) {
+export function EvidenceDialog({ record, onSaveReview, onClose, onSaved }: { record: Detection | null; onSaveReview: SaveReview; onClose: () => void; onSaved: (record: Detection) => void }) {
     const [notes, setNotes] = useState(''), [error, setError] = useState(''), [saving, setSaving] = useState(false);
     useEffect(() => { setNotes(record?.notes || ''); setError(''); }, [record?.id]);
     async function save(status: ReviewStatus) {
-        if (!record || !url) return;
+        if (!record) return;
         setSaving(true); setError('');
         try {
-            const tokenCookie = document.cookie.split('; ').find(cookie => cookie.startsWith('XSRF-TOKEN='));
-            const token = tokenCookie ? decodeURIComponent(tokenCookie.slice('XSRF-TOKEN='.length)) : '';
-            const response = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': token }, body: JSON.stringify({ status, notes }) });
-            if (response.status === 401 || response.status === 419) throw new Error('Your session has expired. Refresh the page and sign in again.');
-            const result = await response.json();
-            if (!response.ok) throw new Error(Object.values(result.errors || {}).flat().join(' ') || 'Unable to save the review.');
-            onSaved(result as Detection); onClose(); toast.success(`${record.plate} ${status.toLowerCase()}. Review saved.`);
+            const updated = await onSaveReview(record, { status, notes });
+            onSaved(updated); onClose(); toast.success(`${record.plate} ${status.toLowerCase()}. Review saved.`);
         } catch (failure) { setError(failure instanceof Error ? failure.message : 'Unable to save this review.'); }
         finally { setSaving(false); }
     }
